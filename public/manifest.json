@@ -1,0 +1,31 @@
+{
+  "name": "Later On",
+  "description": "Save your tabs on later",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "assets/icon_18.png",
+      "32": "assets/icon_48.png",
+      "64": "assets/icon_64.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon_18.png",
+    "48": "assets/icon_48.png",
+    "128": "assets/icon_64.png"
+  },
+  "permissions": [
+    "tabs",
+    "scripting",
+    "contextMenus",
+	"unlimitedStorage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}
