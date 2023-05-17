@@ -1,10 +1,10 @@
 /*global chrome*/
 
-const DB_NAME = "list-of-links";
+const DB_NAME = "listOfLinks";
 const DB_VER = 1;
 const STORE_NAME = "links";
 
-showBadge();
+
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
@@ -12,14 +12,14 @@ chrome.runtime.onInstalled.addListener(() => {
         title: "Добавить в список",
         contexts: ["page"],
     });
-	
-	showBadge();
-});
 
-chrome.runtime.onStartup.addListener(() => {
-	showBadge();
-});
+    let request = indexedDB.open(DB_NAME, DB_VER);
 
+    request.onupgradeneeded = function () {
+        let db = this.result;
+        db.createObjectStore(STORE_NAME, {keyPath: 'href'});
+    };
+});
 
 chrome.runtime.onMessage.addListener(async (msg) => {
 
@@ -110,7 +110,6 @@ chrome.contextMenus.onClicked.addListener(() => {
                 };
             }
         };
-
     }
 
     function getByKey(href) {
@@ -138,9 +137,19 @@ function count() {
     });
 }
 
-function showBadge() {
-	count().then((count) => {
-		chrome.action.setBadgeText({text: count.toString()});
-		chrome.action.setBadgeBackgroundColor({color: '#095b8a'});
-	});	
-}
+let request = indexedDB.open(DB_NAME, DB_VER);
+
+request.onupgradeneeded = function () {
+    let db = this.result;
+    db.createObjectStore(STORE_NAME, {keyPath: 'href'});
+};
+
+request.onsuccess = function () {
+    let db = this.result;
+
+    let store = db.transaction([STORE_NAME], "readwrite").objectStore(STORE_NAME);
+    store.count().onsuccess = function (event) {
+        chrome.action.setBadgeText({text: this.result.toString()});
+        chrome.action.setBadgeBackgroundColor({color: '#095b8a'});
+    };
+};

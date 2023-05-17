@@ -1,4 +1,4 @@
-const DB_NAME = "list-of-links";
+const DB_NAME = "listOfLinks";
 const DB_VER = 1;
 const STORE_NAME = "links";
 
