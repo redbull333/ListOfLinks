@@ -1,29 +1,22 @@
 /*global chrome*/
 
-const DB_NAME = "listOfLinks";
-const DB_VER = 1;
-const STORE_NAME = "links";
 
 
-
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(async () => {
     chrome.contextMenus.create({
         id: "AddInList",
         title: "Добавить в список",
         contexts: ["page"],
     });
 
-    let request = indexedDB.open(DB_NAME, DB_VER);
-
-    request.onupgradeneeded = function () {
-        let db = this.result;
-        db.createObjectStore(STORE_NAME, {keyPath: 'href'});
-    };
+    await createOrSetBadge();
 });
 
-chrome.runtime.onMessage.addListener(async (msg) => {
-
+chrome.runtime.onStartup.addListener(async () => {
+    await createOrSetBadge();
 });
+
+// chrome.runtime.onMessage.addListener(async (msg) => {});
 
 chrome.contextMenus.onClicked.addListener(() => {
     let db;
@@ -122,34 +115,62 @@ chrome.contextMenus.onClicked.addListener(() => {
     }
 });
 
-function count() {
-    return new Promise(function (resolve) {
+
+const DB_NAME = "listOfLinks";
+const DB_VER = 1;
+const STORE_NAME = "links";
+
+// function count() {
+//     return new Promise(function (resolve) {
+//         let request = indexedDB.open(DB_NAME, DB_VER);
+//
+//         request.onsuccess = function () {
+//             let db = this.result;
+//
+//             let store = db.transaction([STORE_NAME], "readwrite").objectStore(STORE_NAME);
+//             store.count().onsuccess = function (event) {
+//                 resolve(event.target.result);
+//             };
+//         };
+//     });
+// }
+
+
+async function createOrSetBadge() {
+    return new Promise((resolve) => {
         let request = indexedDB.open(DB_NAME, DB_VER);
 
-        request.onsuccess = function () {
+        request.onupgradeneeded = function () {
             let db = this.result;
-
-            let store = db.transaction([STORE_NAME], "readwrite").objectStore(STORE_NAME);
-            store.count().onsuccess = function (event) {
-                resolve(event.target.result);
-            };
+            db.createObjectStore(STORE_NAME, {keyPath: 'href'});
         };
+
+        request.onsuccess = async function() {
+            resolve(setBadge());
+        }
     });
 }
 
-let request = indexedDB.open(DB_NAME, DB_VER);
+async function setBadge() {
+	return new Promise((resolve) => {
+		let request = indexedDB.open(DB_NAME, DB_VER);
 
-request.onupgradeneeded = function () {
-    let db = this.result;
-    db.createObjectStore(STORE_NAME, {keyPath: 'href'});
-};
+		request.onupgradeneeded = function () {
+			let db = this.result;
+			db.createObjectStore(STORE_NAME, {keyPath: 'href'});
+		};
 
-request.onsuccess = function () {
-    let db = this.result;
+		request.onsuccess = function () {
+			let db = this.result;
 
-    let store = db.transaction([STORE_NAME], "readwrite").objectStore(STORE_NAME);
-    store.count().onsuccess = function (event) {
-        chrome.action.setBadgeText({text: this.result.toString()});
-        chrome.action.setBadgeBackgroundColor({color: '#095b8a'});
-    };
-};
+			let store = db.transaction([STORE_NAME], "readwrite").objectStore(STORE_NAME);
+			store.count().onsuccess = function () {
+				chrome.action.setBadgeText({text: this.result.toString()});
+				chrome.action.setBadgeBackgroundColor({color: '#095b8a'});
+				resolve(true);
+			};
+		};
+	});
+}
+
+setBadge();
