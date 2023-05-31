@@ -50,6 +50,10 @@ chrome.contextMenus.onClicked.addListener(() => {
                                 return res.blob();
                             })
                             .then(blob => {
+                                if ( ! /^image/.test(blob.type)) {
+                                    throw Error('not an image');
+                                }
+
                                 addLinkToTop(url, tab.title, blob);
                             })
                             .catch(async () => {

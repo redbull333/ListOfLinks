@@ -149,6 +149,10 @@ export function App() {
                                     return res.blob();
                                 })
                                 .then(blob => {
+                                    if ( ! /^image/.test(blob.type)) {
+                                        throw Error('not an image');
+                                    }
+
                                     addLink(tab.url, tab.title, blob);
                                 })
                                 .catch(async () => {
