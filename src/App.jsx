@@ -227,9 +227,12 @@ export function App() {
                                         return res.blob();
                                     })
                                     .then(async blob => {
+                                        if ( ! /^image/.test(blob.type)) {
+                                            throw Error('not an image');
+                                        }
+
                                         await addLink(msg.href, msg.title || msg.href, blob);
                                         addNextTab();
-                                        return;
                                     })
                                     .catch(async () => {
                                         fetch(tab.favIconUrl || "/assets/deficon.svg")
@@ -237,7 +240,6 @@ export function App() {
                                             .then(async blob => {
                                                 await addLink(msg.href, msg.title || msg.href, blob);
                                                 addNextTab();
-                                                return;
                                             });
                                     });
                             });
