@@ -70,7 +70,7 @@ export function Link({
         <>
             <a href={href} onClick={linkClick} onAuxClick={wheelClickDetect} onContextMenu={rightMouseClick}>
                 <img className="favicon" src={URL.createObjectURL(imgblob)} alt=""/>
-                <div className="link__title" dangerouslySetInnerHTML={{__html: title}} contentEditable={editable} ref={titleElement}/>
+                <div className="link__title" dangerouslySetInnerHTML={{__html: title}} contentEditable={editable ? 'plaintext-only' : 'false'} ref={titleElement}/>
                 <div className="link__href">{trimmedURL}</div>
             </a>
             <LockerButton icon={locker} locked={locked} onLocked={lockerButtonClick}/>
