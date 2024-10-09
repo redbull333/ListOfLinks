@@ -62,6 +62,12 @@ export function App() {
     }
 
     function addLink(href, title, blob) {
+        title = title.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
         db.addLink(href, title, blob).then(() => {
             updateBadgeCounter();
         });
@@ -149,7 +155,7 @@ export function App() {
                                     return res.blob();
                                 })
                                 .then(blob => {
-                                    if ( ! /^image/.test(blob.type)) {
+                                    if ( ! /^image/.test(blob.type) || !(blob.size > 0)) {
                                         throw Error('not an image');
                                     }
 
@@ -227,7 +233,7 @@ export function App() {
                                         return res.blob();
                                     })
                                     .then(async blob => {
-                                        if ( ! /^image/.test(blob.type)) {
+                                        if ( ! /^image/.test(blob.type) || !(blob.size > 0)) {
                                             throw Error('not an image');
                                         }
 

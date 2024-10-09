@@ -193,7 +193,12 @@ export function updateTitleByHref(href, newTitle) {
 
         request.onsuccess = () => {
             const link = request.result;
-            link.title = newTitle;
+            link.title = newTitle.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
             const updateRequest = store.put(link);
             updateRequest.onsuccess = () => {
                 resolve(updateRequest.result);
