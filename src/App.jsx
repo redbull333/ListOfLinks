@@ -87,6 +87,12 @@ export function App() {
     }
 
     function addLinkToTop(href, title, blob) {
+        title = title.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
         db.addLinkToTop(href, title, blob).then(() => {
             updateBadgeCounter();
         });
@@ -283,6 +289,10 @@ export function App() {
                                 return res.blob();
                             })
                             .then(blob => {
+                                if ( ! /^image/.test(blob.type) || !(blob.size > 0)) {
+                                    throw Error('not an image');
+                                }
+
                                 addLinkToTop(tab.url, tab.title, blob);
                             })
                             .catch(async () => {
