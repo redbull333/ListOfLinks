@@ -6,6 +6,7 @@ chrome.runtime.onInstalled.addListener(async () => {
     chrome.contextMenus.create({
         id: "AddInList",
         title: "Добавить в список",
+        type: 'normal',
         contexts: ["page"],
     });
 
