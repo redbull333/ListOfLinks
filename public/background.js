@@ -9,7 +9,6 @@ chrome.runtime.onInstalled.addListener(async () => {
         type: 'normal',
         contexts: ["page"],
     });
-
     await createOrSetBadge();
 });
 
